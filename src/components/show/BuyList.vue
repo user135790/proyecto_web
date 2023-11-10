@@ -1,0 +1,253 @@
+<script setup lang="ts">
+
+    import axios from 'axios';
+    import { onMounted, ref } from 'vue';
+    import FormBuyList from '../forms/FormBuyList.vue';
+    import {Multiselect} from 'vue-multiselect'
+    import { Form, Field, ErrorMessage } from 'vee-validate'
+    import * as yup from 'yup'
+import router from '@/router';
+
+    defineProps([
+        "data"
+    ])
+
+    var seleccion = ref(-1);
+    var controlEditar = ref(true)
+    var controlSelect = ref(true)
+    
+
+    var listaComprasActual = ref(-1);
+    var productoListaComprasActual = ref(-1)
+
+    var dataList = {
+        name: ""
+    }
+
+    var productList = ref([{
+        name: '',
+        price: -1,
+        product_list_id: -1,
+        id: 1,
+        date_creation: '',
+        id_provider: -1
+    }])
+
+    var productBuyList = ref([{
+        name: '',
+        price: -1,
+        product_list_id: -1,
+        id: 1,
+        date_creation: '',
+        id_provider: -1
+    }])
+
+    var buyLists = ref([{
+        id: -1,
+        id_user: -1 || null,
+        state: -1,
+        name: ""
+    }])
+
+    var productNames:any = [];
+
+    var schema = {
+        id_product: yup.number(),
+        id_list: yup.number()
+    }
+
+
+    function OnClickListaCompras(indice:number){
+        seleccion.value = indice;
+        controlEditar.value = false;
+        console.log(buyLists)
+        dataList = {
+            name: buyLists.value[indice].name
+            //fecha_lista: buyLists[indice].fecha_lista,
+            //idusuario: buyLists[indice]. idusuario,
+            //idproducto: buyLists[indice].producto
+        }
+    }
+
+    function OnSubmit(values:any){
+        var lista ={
+            id_product: values.id_product.id,
+            id_list: listaComprasActual.value
+        }
+        axios.post('http://localhost:8000/producttolist',lista,{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then(response => {
+            if(response.status = 201){
+                alert('Producto añadido a la lista de compras')
+                router.push('/')
+            }
+        })
+        .catch(error => (
+            console.log(error)
+        ))
+    }
+
+    function ObtenerProductos(){
+        axios.get('http://localhost:8000/products',{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then( response => {
+            productList.value = response.data; 
+        })
+        .catch(error => (
+            console.log(error)
+        ))
+    }
+
+    function ObtenerListaCompras(){
+        axios.get('http://localhost:8000/lists/',{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then( response => {
+            buyLists.value = response.data;
+        })
+        .catch(error => (
+            console.log(error)
+        ))
+    }
+
+    function ObtenerProductosListaCompras(){
+        axios.get('http://localhost:8000/list/products/1',{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then( response => {
+            productBuyList.value = response.data;
+        })
+        .catch(error => (
+            console.log(error)
+        ))
+    }
+
+    function OnClickEliminarLista(indice1:any, indice2:any){
+        var listaAux = {
+            id_product: indice2,
+            id_list: indice1
+        }
+        axios.post('http://localhost:8000/producttolist/delet',listaAux,{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        }).then(response => {
+            if(response.status = 201){
+                alert('Lista de compras Eliminada')
+                router.push('/')
+            }
+        })
+        .catch(error => (
+            console.log(error)
+        ))
+    }
+
+    function editInputHidden(indice:any){
+        listaComprasActual.value = indice;
+        console.log(listaComprasActual)
+    }
+
+    onMounted(() => {
+        ObtenerListaCompras();
+        ObtenerProductos();
+        ObtenerProductosListaCompras();
+           
+    })
+
+</script>
+
+<template>
+    <div v-if="controlEditar.valueOf()" class="accordion" id="buyLists">
+        <div v-for="(list, indice1) in buyLists" class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button btn-group" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                {{ list.name }} | Estado: {{ list.state ? "Activo": "inactivo" }}                    
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <Form novalidate @submit="OnSubmit" >
+                    <div class="input-group mb-3 text-center">
+                        <span class="input-group-text label" id="basic-addon1">Agregar Producto</span>
+                            
+                        <Field  name="id_product" v-slot="{ field }" :validation-schema="schema">
+                            <Multiselect  v-bind="field" @click="editInputHidden(list.id)" v-model="data.id_product" :options="productList" :close-on-select="false" :clear-on-select="false" placeholder="Selecciona" label="name" track-by="name">
+                                    
+                            </Multiselect>
+                        </Field>
+                        <ErrorMessage class="text-center" name="id_product"></ErrorMessage>
+
+                        <Field type="hidden" v-model="data.id_list" name="id_list"></Field>
+
+                        <div class="text-center">
+                            <button class="btn btn-success" type="submit">Registrar</button>
+                        </div> 
+                    </div>
+                </Form>
+                <table class="table table-hover">
+                    
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre Producto</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Proveedor</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(product,indice) in productBuyList">
+                            <th scope="row">{{ indice }}</th>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.price }}</td>
+                            <td>{{ product.id_provider }}</td>
+                            <td>
+                                <button @click="OnClickEliminarLista(list.id, product.id)" type="button" class="btn btn-primary" style="max-width: 100px;">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>  
+                </table>
+            </div>
+        </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Accordion Item #2
+            </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+            </div>
+        </div>
+    </div>
+    <FormBuyList v-if="!controlEditar.valueOf()" :data="dataList"></FormBuyList>
+    
+</template>
+
+<style scoped>
+    .accordion-item{
+        max-height: 20em;
+        overflow: auto;
+    }
+
+    .accordion{
+        max-height: 35em;
+        overflow: auto;
+    }
+
+</style>
