@@ -49,11 +49,20 @@ import router from '@/router';
         name: ""
     }])
 
+    var colapsado = ref(false)
+
     var productNames:any = [];
 
     var schema = {
         id_product: yup.number(),
         id_list: yup.number()
+    }
+
+    var usuarioActual = ref(-1);
+
+    var estilos = {
+        '--bs-table-bg': '#fff',
+        'cursor': 'pointer'
     }
 
 
@@ -67,6 +76,10 @@ import router from '@/router';
             //idusuario: buyLists[indice]. idusuario,
             //idproducto: buyLists[indice].producto
         }
+    }
+
+    function ObtenerUsuario(){
+        
     }
 
     function OnSubmit(values:any){
@@ -105,17 +118,26 @@ import router from '@/router';
     }
 
     function ObtenerListaCompras(){
-        axios.get('http://localhost:8000/lists/',{
-            headers:{
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            } 
-        })
+        axios.post("http://localhost:8000/user/yo/?token="+localStorage.getItem('token'))
         .then( response => {
-            buyLists.value = response.data;
+            if( response.status == 200){
+                axios.get('http://localhost:8000/list/user/'+response.data,{
+                headers:{
+                    'Authorization': 'Bearer '+localStorage.getItem('token')
+                } 
+                })
+                .then( response => {
+                    buyLists.value = response.data;
+                })
+                .catch(error => (
+                    console.log(error)
+                ))
+            } 
         })
         .catch(error => (
             console.log(error)
         ))
+        
     }
 
     function ObtenerProductosListaCompras(){
@@ -157,7 +179,19 @@ import router from '@/router';
         console.log(listaComprasActual)
     }
 
+    function OnClickItemLista(idProductoLista:any, idLista:any){
+        let item = document.getElementById(idProductoLista+""+idLista);
+        item?.style.setProperty("#"+idProductoLista+""+idLista+" --bs-table-bg", "green");
+        console.log(idProductoLista+""+idLista)
+    }
+
+    function OnClickAccordion(evento:any){
+        console.log(evento)
+        //colapsado.value = !colapsado.value
+    }
+
     onMounted(() => {
+        ObtenerUsuario();
         ObtenerListaCompras();
         ObtenerProductos();
         ObtenerProductosListaCompras();
@@ -170,18 +204,19 @@ import router from '@/router';
     <div v-if="controlEditar.valueOf()" class="accordion" id="buyLists">
         <div v-for="(list, indice1) in buyLists" class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button btn-group" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <button class="accordion-button btn-group" :class="{collapsed: colapsado}" type="button" data-bs-toggle="collapse" :data-bs-target="'#Collapse'+indice1.toString()"
+             aria-expanded="true" aria-controls="collapseOne">
                 {{ list.name }} | Estado: {{ list.state ? "Activo": "inactivo" }}                    
             </button>
         </h2>
-        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+        <div :id="'Collapse'+indice1.toString()" class="accordion-collapse collapse" :class="{show: colapsado}" data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 <Form novalidate @submit="OnSubmit" >
                     <div class="input-group mb-3 text-center">
                         <span class="input-group-text label" id="basic-addon1">Agregar Producto</span>
                             
                         <Field  name="id_product" v-slot="{ field }" :validation-schema="schema">
-                            <Multiselect  v-bind="field" @click="editInputHidden(list.id)" v-model="data.id_product" :options="productList" :close-on-select="false" :clear-on-select="false" placeholder="Selecciona" label="name" track-by="name">
+                            <Multiselect  v-bind="field" @click="editInputHidden(list.id)" v-model="data.id_product" :options="productList" placeholder="Selecciona" label="name" track-by="name">
                                     
                             </Multiselect>
                         </Field>
@@ -189,9 +224,7 @@ import router from '@/router';
 
                         <Field type="hidden" v-model="data.id_list" name="id_list"></Field>
 
-                        <div class="text-center">
-                            <button class="btn btn-success" type="submit">Registrar</button>
-                        </div> 
+                        <button class="btn btn-primary boton-check" type="submit"><i class="bi bi-plus-circle"></i></button>
                     </div>
                 </Form>
                 <table class="table table-hover">
@@ -206,14 +239,14 @@ import router from '@/router';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(product,indice) in productBuyList">
+                        <tr :id=list.id.toString()+product.product_list_id.toString() :style="estilos" @click="OnClickItemLista(product.product_list_id, list.id)" v-for="(product,indice) in productList.filter((producto) => producto.product_list_id == list.id)">
                             <th scope="row">{{ indice }}</th>
                             <td>{{ product.name }}</td>
                             <td>{{ product.price }}</td>
                             <td>{{ product.id_provider }}</td>
                             <td>
-                                <button @click="OnClickEliminarLista(list.id, product.id)" type="button" class="btn btn-primary" style="max-width: 100px;">
-                                    Eliminar
+                                <button  @click="OnClickEliminarLista(list.id, product.id)" type="button" class="btn btn-danger btn-accion" style="max-width: 100px;">
+                                    <i class="bi bi-trash3"></i>
                                 </button>
                             </td>
                         </tr>
@@ -245,9 +278,22 @@ import router from '@/router';
         overflow: auto;
     }
 
+    .multiselect{
+        width: 50%;
+    }
+
     .accordion{
         max-height: 35em;
         overflow: auto;
     }
+
+    .boton-check{
+        width: 70px;
+    }
+
+    form{
+        width: 100%;
+    }
+
 
 </style>

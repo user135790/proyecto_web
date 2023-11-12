@@ -96,7 +96,7 @@ router.beforeEach((to, from, next) => {
     if (current_user.empiry > Date.now()/1000) {
       next();
     } else {
-      localStorage.setItem('token', '');
+      localStorage.clear();
       next('/login');
     }
   } else {

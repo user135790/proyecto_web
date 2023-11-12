@@ -3,7 +3,8 @@ import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import {ref} from 'vue'
 
-var session = ref(true)
+var logged = localStorage.getItem('token')!= undefined;
+var session = ref(logged)
 
 </script>
 

@@ -95,7 +95,7 @@ import router from '@/router'
 <template>
     <div class="registro-lista">
         <div class="m-0 row justify-content-center">
-            <Form novalidate @submit="OnSubmit" :validation-schema="schema">
+            <Form novalidate @submit="OnSubmit" class="form" :validation-schema="schema">
                 <div class="input-group mb-3 text-center">
                     <span class="input-group-text label" id="basic-addon1">Nombre lista compras</span>
                     <Field type="text" placeholder="Nombre de lista de compras" name="name" v-model="data.nombre_lista"/>
@@ -127,7 +127,7 @@ import router from '@/router'
     }
 
 
-    form{
+    .form{
         width: 70%;
     }
 

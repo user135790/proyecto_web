@@ -84,7 +84,10 @@
     font-size: 15em;
     justify-content: center;
     margin: 5px 5px;
-    padding: 20px 0 0 0;
+}
+
+.icon i{
+    display: flex;
 }
 .btn-success{
     --bs-btn-bg: cornflowerblue;

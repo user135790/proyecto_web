@@ -16,5 +16,7 @@ import { onMounted } from 'vue';
 </template>
 
 <style scoped>
-
+h2{
+    text-align: center;
+}
 </style>

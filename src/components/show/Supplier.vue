@@ -2,11 +2,13 @@
     import { onMounted, ref } from 'vue';
     import FormSupplier from '../forms/FormSupplier.vue';
 import axios from 'axios';
+import router from '@/router';
 
     var seleccion = ref(-1);
     var controlEditar = ref(true)
 
     var provList = ref([{
+        id: "",
         name: "",
         date_creation: ""
     }])
@@ -39,6 +41,23 @@ import axios from 'axios';
         ))
     }
 
+    function OnClickEliminarProvedor(idProvedor:any){
+        axios.delete('http://localhost:8000/provider/{id}?provider_id='+idProvedor,{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then(response => {
+            if(response.status = 200){
+                alert("Provedor eliminado")
+                router.push('/proveedor/')
+            }
+        })
+        .catch(error => (
+            console.log(error)
+        ))  
+    }
+
 
     onMounted(()=>{
         ObtenerListaProductos();
@@ -62,8 +81,7 @@ import axios from 'axios';
                     <td>{{proveedor.name}}</td>
                     <td>{{proveedor.date_creation}}</td>
                     <td>
-                        <button @click="OnClickProveedor(indice)">Editar</button>
-                        <button>Eliminar</button>
+                        <button class="btn btn-danger btn-accion" @click="OnClickEliminarProvedor(proveedor.id)"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
             </tbody>
@@ -71,3 +89,11 @@ import axios from 'axios';
     </div>
     <FormSupplier v-if="!controlEditar.valueOf()" :data="dataProveedor"></FormSupplier>
 </template>
+
+<style scoped>
+.btn-accion {
+    margin: 0 10px;
+    font-size: large;
+}
+
+</style>

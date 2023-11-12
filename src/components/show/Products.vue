@@ -5,6 +5,7 @@
     import axios from 'axios';
     import * as yup from 'yup';
     import { objectTypeInternalSlot } from '@babel/types';
+import router from '@/router';
 
     var seleccion = ref(-1);
     var controlEditar = ref(true)
@@ -53,6 +54,23 @@
         controlEditar.value = false
     }
 
+    function OnClickEliminarProducto(idProducto:any){
+        axios.delete('http://localhost:8000/product/{id}?product_id='+idProducto,{
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            } 
+        })
+        .then(response => {
+            if(response.status = 200){
+                alert("Producto eliminado")
+                router.push('/producto/')
+            }
+        })
+        .catch(error => (
+            console.log(error)
+        ))  
+    }
+
     onMounted(()=>{
         ObtenerListaProductos();
     })
@@ -79,8 +97,10 @@
                         <td>{{producto.id_provider}}</td>
                         <td>{{producto.date_creation}}</td>
                         <td>
-                            <button @click="OnClickEditarProducto(index)">Editar</button>
-                            <button>Eliminar</button>
+                            <button @click="OnClickEditarProducto(index)" class="btn btn-secondary btn-accion">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button @click="OnClickEliminarProducto(producto.id)" class="btn btn-danger btn-accion"><i class="bi bi-trash3"></i></button>
                         </td>
                     </tr>
             </tbody>
@@ -88,3 +108,11 @@
         <FormProductVue v-if="!controlEditar.valueOf()" :data="prodList[seleccion]" ></FormProductVue>
     </div>
 </template>
+
+<style scoped>
+.btn-accion {
+    margin: 0 10px;
+    font-size: large;
+}
+
+</style>

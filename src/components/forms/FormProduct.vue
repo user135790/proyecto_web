@@ -76,6 +76,12 @@ import router from '@/router'
                     'Authorization': 'Bearer '+localStorage.getItem('token')
                 }
             })
+            .then(response => {
+            if(response.status = 200){
+                alert('Producto Actualizado')
+                router.push('/producto')
+            }
+            })
             .catch(error => (
                 console.log(error)
             ))

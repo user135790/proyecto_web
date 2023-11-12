@@ -9,11 +9,23 @@
 
 <template>
     <main class="container-lg">
-        <h2>Gestion lista de compras</h2>
-        <div>
-            <button class="btn btn-primary"><RouterLink class="nav-link" to="/listaCompras/registrar">Crear nueva lista de compras</RouterLink></button>
+        <h2 class="h2-lista-compras">Gestion lista de compras</h2>
+        <div class="btn-crear-lista">
+            <button class="btn btn-primary"><RouterLink class="btn btn-primary" to="/listaCompras/registrar"><i class="bi bi-plus-circle"></i> Nueva Lista de Compras</RouterLink></button>
         </div>
         <BuyList :data="data"></BuyList>
     </main>
     
 </template>
+
+<style scoped>
+
+.h2-lista-compras{
+    display: inline-block;
+    width: 70%;
+}
+
+.btn-crear-lista{
+    display: inline-block;
+}
+</style>
