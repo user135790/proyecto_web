@@ -2,9 +2,6 @@
     import Login from '@/components/forms/Login.vue';
 import { onMounted } from 'vue';
 
-    onMounted(()=>{
-        localStorage.clear()
-    })
 </script>
 
 

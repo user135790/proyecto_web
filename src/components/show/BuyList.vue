@@ -12,13 +12,10 @@ import router from '@/router';
         "data"
     ])
 
-    var seleccion = ref(-1);
     var controlEditar = ref(true)
-    var controlSelect = ref(true)
-    
+    var recargarUnaVez = true;
 
     var listaComprasActual = ref(-1);
-    var productoListaComprasActual = ref(-1)
 
     var dataList = {
         name: ""
@@ -51,35 +48,14 @@ import router from '@/router';
 
     var colapsado = ref(false)
 
-    var productNames:any = [];
-
     var schema = {
         id_product: yup.number(),
         id_list: yup.number()
     }
 
-    var usuarioActual = ref(-1);
-
     var estilos = {
         '--bs-table-bg': '#fff',
         'cursor': 'pointer'
-    }
-
-
-    function OnClickListaCompras(indice:number){
-        seleccion.value = indice;
-        controlEditar.value = false;
-        console.log(buyLists)
-        dataList = {
-            name: buyLists.value[indice].name
-            //fecha_lista: buyLists[indice].fecha_lista,
-            //idusuario: buyLists[indice]. idusuario,
-            //idproducto: buyLists[indice].producto
-        }
-    }
-
-    function ObtenerUsuario(){
-        
     }
 
     function OnSubmit(values:any){
@@ -95,7 +71,7 @@ import router from '@/router';
         .then(response => {
             if(response.status = 201){
                 alert('Producto añadido a la lista de compras')
-                router.push('/')
+                ObtenerProductos();
             }
         })
         .catch(error => (
@@ -140,20 +116,6 @@ import router from '@/router';
         
     }
 
-    function ObtenerProductosListaCompras(){
-        axios.get('http://localhost:8000/list/products/1',{
-            headers:{
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            } 
-        })
-        .then( response => {
-            productBuyList.value = response.data;
-        })
-        .catch(error => (
-            console.log(error)
-        ))
-    }
-
     function OnClickEliminarLista(indice1:any, indice2:any){
         var listaAux = {
             id_product: indice2,
@@ -166,7 +128,7 @@ import router from '@/router';
         }).then(response => {
             if(response.status = 201){
                 alert('Lista de compras Eliminada')
-                router.push('/')
+                ObtenerProductos();
             }
         })
         .catch(error => (
@@ -176,26 +138,17 @@ import router from '@/router';
 
     function editInputHidden(indice:any){
         listaComprasActual.value = indice;
-        console.log(listaComprasActual)
     }
 
     function OnClickItemLista(idProductoLista:any, idLista:any){
         let item = document.getElementById(idProductoLista+""+idLista);
         item?.style.setProperty("#"+idProductoLista+""+idLista+" --bs-table-bg", "green");
-        console.log(idProductoLista+""+idLista)
-    }
-
-    function OnClickAccordion(evento:any){
-        console.log(evento)
-        //colapsado.value = !colapsado.value
     }
 
     onMounted(() => {
-        ObtenerUsuario();
         ObtenerListaCompras();
         ObtenerProductos();
-        ObtenerProductosListaCompras();
-           
+        
     })
 
 </script>
@@ -215,8 +168,8 @@ import router from '@/router';
                     <div class="input-group mb-3 text-center">
                         <span class="input-group-text label" id="basic-addon1">Agregar Producto</span>
                             
-                        <Field  name="id_product" v-slot="{ field }" :validation-schema="schema">
-                            <Multiselect  v-bind="field" @click="editInputHidden(list.id)" v-model="data.id_product" :options="productList" placeholder="Selecciona" label="name" track-by="name">
+                        <Field  name="id_product"  v-slot="{ field }" :validation-schema="schema">
+                            <Multiselect  v-bind="field" v-model="data.id_product" :options="productList" placeholder="Selecciona" label="name" track-by="name">
                                     
                             </Multiselect>
                         </Field>
@@ -224,7 +177,7 @@ import router from '@/router';
 
                         <Field type="hidden" v-model="data.id_list" name="id_list"></Field>
 
-                        <button class="btn btn-primary boton-check" type="submit"><i class="bi bi-plus-circle"></i></button>
+                        <button @click="editInputHidden(list.id)" class="btn btn-primary boton-check" type="submit"><i class="bi bi-plus-circle"></i></button>
                     </div>
                 </Form>
                 <table class="table table-hover">
@@ -254,18 +207,6 @@ import router from '@/router';
                 </table>
             </div>
         </div>
-        </div>
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Accordion Item #2
-            </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-            </div>
-            </div>
         </div>
     </div>
     <FormBuyList v-if="!controlEditar.valueOf()" :data="dataList"></FormBuyList>

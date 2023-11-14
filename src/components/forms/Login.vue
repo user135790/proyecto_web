@@ -17,13 +17,12 @@
 
     const schema ={
         email: yup.string()
-            .min(10,"El nombre de usuario debe ser minimo de 10 caracteres")
-            .max(50, "El nombre de usuario no puede sobrepasar los 50 caracteres")
-            .required("El nombre de usuario es un campo obligatorio"),
+            .email("El campo debe ser un email")
+            .max(50, "El email no puede sobrepasar los 50 caracteres")
+            .required("El email es un campo obligatorio"),
         
         password: yup.string()
             .min(7, "La contraseña debe tener al menos 7 caracteres")
-            //.matches(new RegExp("/(?=.*\d)"), "La contraseña debe tener un numero")
             .required("La contraseña es un campo obligatorio")
     }
                 
@@ -31,7 +30,6 @@
         axios.post('http://localhost:8000/user/login',values)
         .then(response => {
             if(response.status = 200){
-                console.log(response)
                 localStorage.setItem('token', response.data['acces token'])
                 router.push('/')
             }

@@ -27,7 +27,7 @@ import router from '@/router';
         }
     }
 
-    function ObtenerListaProductos(){
+    function ObtenerListaProvedores(){
         axios.get('http://localhost:8000/provider',{
             headers:{
                 'Authorization': 'Bearer '+localStorage.getItem('token')
@@ -50,6 +50,7 @@ import router from '@/router';
         .then(response => {
             if(response.status = 200){
                 alert("Provedor eliminado")
+                ObtenerListaProvedores();
                 router.push('/proveedor/')
             }
         })
@@ -60,7 +61,7 @@ import router from '@/router';
 
 
     onMounted(()=>{
-        ObtenerListaProductos();
+        ObtenerListaProvedores();
     })
 </script>
 
@@ -76,7 +77,7 @@ import router from '@/router';
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(proveedor,indice) in provList">
+                <tr v-for="(proveedor,indice) in provList" :key="proveedor.id">
                     <th scope="row">{{ indice }}</th>
                     <td>{{proveedor.name}}</td>
                     <td>{{proveedor.date_creation}}</td>

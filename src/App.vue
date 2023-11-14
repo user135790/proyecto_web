@@ -1,10 +1,27 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import {ref} from 'vue'
+import {nextTick, onMounted, ref, watch} from 'vue'
+import Login from '@/components/forms/Login.vue';
+import { string } from 'yup';
 
-var logged = localStorage.getItem('token')!= undefined;
-var session = ref(logged)
+
+var session = ref(localStorage.getItem('token'))
+
+function actualizarSesion(){
+      localStorage.clear()
+      session.value = localStorage.getItem('token')
+}
+
+function verificarSesion() {
+  if(!session.value){
+    session.value = localStorage.getItem('token')
+  }
+  
+}
+onMounted(()=>{
+    setInterval(verificarSesion, 1000);
+})
+
 
 </script>
 
@@ -22,7 +39,7 @@ var session = ref(logged)
               <RouterLink class="nav-link" to="/proveedor">Proveedores</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" to="/login">Cerrar Sesion</RouterLink>
+              <RouterLink @click="actualizarSesion" class="nav-link" to="/login">Cerrar Sesion</RouterLink>
             </li>
           </ul>
         </div>  

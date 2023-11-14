@@ -18,7 +18,7 @@ import router from '@/router'
 
     const schema ={
         name: yup.string()
-            .min(10,"El nombre de proveedor debe ser minimo de 5 caracteres")
+            .min(3,"El nombre debe ser minimo de 3 caracteres")
             .required("El nombre de usuario es un campo obligatorio"),
         
         date_creation: yup.date()

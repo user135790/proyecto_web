@@ -16,17 +16,16 @@ import router from '@/router'
 
     const schema ={
         fullname: yup.string()
-            .min(10,"El nombre debe ser minimo de 10 caracteres")
+            .min(3,"El nombre debe ser minimo de 3 caracteres")
             .max(50, "El nombre no puede sobrepasar los 50 caracteres")
             .required("El nombre es un campo obligatorio"),
         email: yup.string()
-            .min(5,"El nombre de usuario debe ser minimo de 5 caracteres")
-            .max(50, "El nombre de usuario no puede sobrepasar los 50 caracteres")
-            .required("El nombre de usuario es un campo obligatorio"),
+            .email("El campo debe ser un email")
+            .max(50, "El email no puede sobrepasar los 50 caracteres")
+            .required("El email es un campo obligatorio"),
         
         password: yup.string()
             .min(7, "La contraseña debe tener al menos 7 caracteres")
-            //.matches(new RegExp("/(?=.*\d)"), "La contraseña debe tener un numero")
             .required("La contraseña es un campo obligatorio")
     }
                 
@@ -88,8 +87,12 @@ import router from '@/router'
     font-size: 15em;
     justify-content: center;
     margin: 5px 5px;
-    padding: 20px 0 0 0;
 }
+
+.icon i{
+    display: flex;
+}
+
 .btn-success{
     --bs-btn-bg: cornflowerblue;
     --bs-btn-hover-bg: rgb(118, 156, 226);

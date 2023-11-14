@@ -1,10 +1,11 @@
 <script setup lang="ts">
     import BuyList from '@/components/show/BuyList.vue';
 
-    var data ={
+    var data = {
         id_product: -1,
         id_list: -1,
     }
+    
 </script>
 
 <template>

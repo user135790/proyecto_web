@@ -62,8 +62,8 @@ import router from '@/router';
         })
         .then(response => {
             if(response.status = 200){
-                alert("Producto eliminado")
-                router.push('/producto/')
+                alert("Producto eliminado");
+                ObtenerListaProductos();
             }
         })
         .catch(error => (

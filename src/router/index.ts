@@ -33,35 +33,35 @@ const router = createRouter({
       name: 'listaCompras',
       component: ViewBuyListVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true 
       }
     },{
       path: '/proveedor',
       name: 'Proveedor',
       component: ViewSupplierVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true 
       }
     },{
       path: '/listaCompras/registrar',
       name: 'RegistrarListaCompras',
       component: ViewRegisterBuyListVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true 
       }
     },{
       path: '/producto/registrar',
       name: 'RegistrarProducto',
       component: ViewRegistrerProductVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true 
       }
     },{
       path: '/proveedor/registrar',
       name: 'RegistrarProvedor',
       component: ViewRegistrerSupplierVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true
       }
     },{
       path: '/usuario/registrar',
@@ -72,7 +72,7 @@ const router = createRouter({
       name: 'salir',
       component: LoginVue,
       meta: {
-        requiresAuth: true // Add meta field to indicate protected route
+        requiresAuth: true
       }
     }
   ]
@@ -86,7 +86,6 @@ router.beforeEach((to, from, next) => {
     try{
         let decoded = VueJwtDecode.decode(token)
         current_user = decoded;
-        console.log(Date.now()/1000 + " "+current_user.empiry)
     }
     catch(err){
         console.log('token is null: ',err);

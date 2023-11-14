@@ -12,9 +12,6 @@ import router from '@/router'
         "data"
     ])
 
-
-    
-
     var controlFormProvider = ref(false)
 
     var dataProduct = {
@@ -33,8 +30,8 @@ import router from '@/router'
 
     const schema ={
         name: yup.string()
-            .min(10,"El nombre de proveedor debe ser minimo de 5 caracteres")
-            .required("El nombre de usuario es un campo obligatorio"),
+            .min(3,"El nombre debe ser minimo de 3 caracteres")
+            .required("El nombre es un campo obligatorio"),
         
         //date_creation: yup.date().required("La fecha de creacion es un campo obligatorio"),
 
@@ -69,7 +66,6 @@ import router from '@/router'
     })
 
     function OnSubmit(values:any){
-        console.log(values.id_product)
         if(values.id_product != null){
             axios.put('http://localhost:8000/products/'+values.id_product,values,{
                 headers:{
@@ -78,8 +74,8 @@ import router from '@/router'
             })
             .then(response => {
             if(response.status = 200){
-                alert('Producto Actualizado')
-                router.push('/producto')
+                alert('Producto Actualizado');
+                window.location.reload();
             }
             })
             .catch(error => (
@@ -140,7 +136,7 @@ import router from '@/router'
                 <Field type="hidden" name="id_product" v-model="data.id"/>
                 
                 <div class="text-center">
-                    <button class="btn btn-success" type="submit">Actualizar</button>
+                    <button class="btn btn-success" type="submit">{{data.id != null ? "Actualiza": "Crear"}}</button>
                 </div>
              
             </Form>

@@ -12,12 +12,9 @@ import router from '@/router'
         "data"
     ])
 
-    var dataList = {
-        nombre_lista: '',
-        fecha_lista: '',
-        idusuario: 0,
-        idproducto: []
-    }
+    var isOpen = false;
+
+    var values:any = [];
 
     var usuarioActual = -1;
 
@@ -32,41 +29,12 @@ import router from '@/router'
         ))
     }
 
-    var isOpen = false;
-
-    var values:any = [];
-
-    var productList = [{
-            nombre_producto: 'Mantequilla',
-            precio: 15463,
-            idproveedor: 1,
-            fecha_creacion: '2016/02/02'
-    },{
-            nombre_producto: 'Cacao',
-            precio: 15463,
-            idproveedor: 1,
-            fecha_creacion: '2016/02/02'
-    },{
-            nombre_producto: 'Fresas',
-            precio: 15463,
-            idproveedor: 1,
-            fecha_creacion: '2016/02/02'
-    },{
-            nombre_producto: 'Chocolate',
-            precio: 15463,
-            idproveedor: 1,
-            fecha_creacion: '2016/02/02'
-    }]
-
     const schema ={
         name: yup.string()
-            .min(10,"El nombre de proveedor debe ser minimo de 5 caracteres")
-            .required("El nombre de usuario es un campo obligatorio"),
+            .min(10,"El nombre de la lista de compras debe ser minimo de 3 caracteres")
+            .required("El nombre es un campo obligatorio"),
         
-        //fecha_lista: yup.date().required("La fecha de creacion es un campo obligatorio"),
-
-        id_user: yup.number()
-        //idproducto: yup.number().required()
+        fecha_lista: yup.date().required("La fecha de creacion es un campo obligatorio"),
     }
 
     function OnSubmit(values:any){
@@ -95,7 +63,7 @@ import router from '@/router'
 <template>
     <div class="registro-lista">
         <div class="m-0 row justify-content-center">
-            <Form novalidate @submit="OnSubmit" class="form" :validation-schema="schema">
+            <Form novalidate @submit="OnSubmit" action="/" class="form" :validation-schema="schema">
                 <div class="input-group mb-3 text-center">
                     <span class="input-group-text label" id="basic-addon1">Nombre lista compras</span>
                     <Field type="text" placeholder="Nombre de lista de compras" name="name" v-model="data.nombre_lista"/>
